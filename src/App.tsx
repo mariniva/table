@@ -1,26 +1,50 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { useEffect, useState } from "react";
+import "./App.css";
+import ProductTable from "./ProductTable/ProductTable";
+import store from "./store/store";
+import { TableItem, loadData } from "./store/reducers/TableReducer";
+import ProductEditModal from "./ModalEdit/ProductEditModal";
+import { v4 as uuidv4 } from "uuid";
 
-function App() {
+const App: React.FC = () => {
+  const [showEditModal, setShowEditModal] = useState(false);
+
+  useEffect(() => {
+    store.dispatch(loadData());
+  }, []);
+
+  const handleOpenEditModal = () => {
+    setShowEditModal(true);
+  };
+  
+  const handleCloseEditModal = () => {
+    setShowEditModal(false);
+  };
+
+  const product: TableItem = {
+    id: uuidv4(),
+    name: "",
+    email: "",
+    count: 1,
+    price: 0,
+    delivery: "empty",
+    country: "",
+    city: [],
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <button onClick={handleOpenEditModal}>Add New</button>
+      {showEditModal && (
+        <ProductEditModal
+          handleCloseEditModal={handleCloseEditModal}
+          product={product}
+          formPrice={`$${product.price}`}
+        />
+      )}
+      <ProductTable />
     </div>
   );
-}
+};
 
 export default App;
